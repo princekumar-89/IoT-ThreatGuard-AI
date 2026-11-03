@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="IoT Sentinel AI - AI-Based IoT Cyberattack and Device Anomaly Detection dashboard (demo).">
+  <meta name="theme-color" content="#0a1224">
+  <title>IoT Sentinel AI | AI-Based IoT Cyberattack and Device Anomaly Detection</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- SVG icon sprite (referenced with <use href="#icon-name">) -->
+  <svg class="icon-sprite" width="0" height="0" aria-hidden="true" focusable="false">
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8.5 12l2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-device" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 1v4M15 1v4M9 19v4M15 19v4M1 9h4M1 15h4M19 9h4M19 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-brain" viewBox="0 0 24 24"><path d="M9 4a3 3 0 00-3 3 3 3 0 00-2 3 3 3 0 001 5 3 3 0 005 3V4zM15 4a3 3 0 013 3 3 3 0 012 3 3 3 0 01-1 5 3 3 0 01-5 3V4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M8 15l4-4 3 3 5-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3l10 18H2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v5M12 18v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-flow" viewBox="0 0 24 24"><rect x="3" y="3" width="6" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><rect x="15" y="15" width="6" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 6h6v9" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0112 0v6l2 2H4zM10 21h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 16l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 21c1-5 15-5 16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 12.5l3 3 5-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4 18a8 8 0 1116 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 18l4-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  </svg>
+
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <div class="app-shell" id="appShell">
+
+    <!-- ========== SIDEBAR ========== -->
+    <aside class="sidebar" id="sidebar" aria-label="Sidebar">
+      <div class="brand">
+        <svg class="icon brand-icon" aria-hidden="true"><use href="#i-shield"/></svg>
+        <div class="brand-text">
+          <span class="brand-name">IoT Sentinel AI</span>
+          <span class="brand-tagline">Anomaly Detection</span>
+        </div>
+        <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" type="button" aria-label="Collapse sidebar" aria-pressed="false">&laquo;</button>
+      </div>
+
+      <nav class="sidebar-nav" id="sidebarNav" aria-label="Primary navigation">
+        <ul class="nav-list">
+          <li><a href="#overview" id="navOverview" class="nav-link is-active" data-title="Overview" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg><span class="nav-text">Overview</span></a></li>
+          <li><a href="#devices" id="navDevices" class="nav-link" data-title="Device Monitoring"><svg class="icon" aria-hidden="true"><use href="#i-device"/></svg><span class="nav-text">Device Monitoring</span></a></li>
+          <li><a href="#analysis" id="navAnalysis" class="nav-link" data-title="AI Analysis"><svg class="icon" aria-hidden="true"><use href="#i-brain"/></svg><span class="nav-text">AI Analysis</span></a></li>
+          <li><a href="#analytics" id="navAnalytics" class="nav-link" data-title="Live Analytics"><svg class="icon" aria-hidden="true"><use href="#i-chart"/></svg><span class="nav-text">Live Analytics</span></a></li>
+          <li><a href="#alerts" id="navAlerts" class="nav-link" data-title="Alerts &amp; Events"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg><span class="nav-text">Alerts &amp; Events</span></a></li>
+          <li><a href="#architecture" id="navArchitecture" class="nav-link" data-title="System Architecture"><svg class="icon" aria-hidden="true"><use href="#i-flow"/></svg><span class="nav-text">System Architecture</span></a></li>
+          <li><a href="#settings" id="navSettings" class="nav-link" data-title="Settings"><svg class="icon" aria-hidden="true"><use href="#i-gear"/></svg><span class="nav-text">Settings</span></a></li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span class="badge badge-demo" id="sidebarModeBadge">Demo Mode</span>
+      </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" hidden></div>
+
+    <!-- ========== MAIN AREA ========== -->
+    <div class="main-area">
+
+      <!-- TOP HEADER -->
+      <header class="topbar" id="topbar">
+        <button class="menu-toggle" id="menuToggle" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="Open navigation menu">
+          <svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg>
+        </button>
+
+        <h1 class="page-title" id="pageTitle">Overview</h1>
+
+        <div class="search-box" role="search">
+          <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+          <label class="visually-hidden" for="globalSearch">Search devices, alerts and events</label>
+          <input type="search" id="globalSearch" name="globalSearch" placeholder="Search devices, alerts..." autocomplete="off">
+        </div>
+
+        <div class="topbar-actions">
+          <span class="badge badge-status" id="backendStatusBadge" role="status" aria-live="polite">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span id="backendStatusText">Backend: Not Connected</span>
+          </span>
+          <span class="last-updated" id="lastUpdated">Last updated: <time id="lastUpdatedTime">Not yet updated</time></span>
+          <button class="icon-btn" id="notificationBtn" type="button" aria-label="Notifications">
+            <svg class="icon" aria-hidden="true"><use href="#i-bell"/></svg>
+            <span class="notification-count" id="notificationCount" aria-label="Unacknowledged alerts">3</span>
+          </button>
+          <div class="user-profile" id="userProfile">
+            <svg class="icon user-avatar" aria-hidden="true"><use href="#i-user"/></svg>
+            <span class="user-name" id="userName">Security Admin</span>
+          </div>
+        </div>
+      </header>
+
+      <main class="content" id="main-content">
+
+        <p class="demo-banner" id="demoBanner" role="note">Demo mode: all values shown below are sample data for interface demonstration only. They are not live hardware readings.</p>
+
+        <!-- ===== A. OVERVIEW / KPI ===== -->
+        <section class="section" id="overview" aria-labelledby="overviewTitle">
+          <div class="section-header">
+            <h2 class="section-title" id="overviewTitle">Overview</h2>
+            <span class="badge badge-demo">Sample values</span>
+          </div>
+          <div class="kpi-grid">
+            <article class="card kpi-card" id="kpiTotalDevices">
+              <svg class="icon kpi-icon" aria-hidden="true"><use href="#i-device"/></svg>
+              <h3 class="kpi-label">Total IoT Devices</h3>
+              <p class="kpi-value" id="totalDevicesValue">5</p>
+              <p class="kpi-note" id="totalDevicesNote">Registered sample devices</p>
+            </article>
+            <article class="card kpi-card" id="kpiNormalDevices">
+              <svg class="icon kpi-icon" aria-hidden="true"><use href="#i-check"/></svg>
+              <h3 class="kpi-label">Normal Devices</h3>
+              <p class="kpi-value" id="normalDevicesValue">3</p>
+              <p class="kpi-note" id="normalDevicesNote">Operating within expected range</p>
+            </article>
+            <article class="card kpi-card" id="kpiAnomalies">
+              <svg class="icon kpi-icon" aria-hidden="true"><use href="#i-alert"/></svg>
+              <h3 class="kpi-label">Anomalies Detected</h3>
+              <p class="kpi-value" id="anomaliesValue">1</p>
+              <p class="kpi-note" id="anomaliesNote">Flagged in sample data</p>
+            </article>
+            <article class="card kpi-card" id="kpiRiskLevel">
+              <svg class="icon kpi-icon" aria-hidden="true"><use href="#i-gauge"/></svg>
+              <h3 class="kpi-label">Current Risk Level</h3>
+              <p class="kpi-value" id="riskLevelValue">Medium</p>
+              <p class="kpi-note" id="riskLevelNote">Demo risk indicator</p>
+            </article>
+          </div>
+        </section>
+
+        <!-- ===== D. DEVICE MONITORING ===== -->
+        <section class="section" id="devices" aria-labelledby="devicesTitle">
+          <div class="section-header">
+            <h2 class="section-title" id="devicesTitle">Device Monitoring</h2>
+            <span class="badge badge-demo">Demo data</span>
+          </div>
+          <article class="card">
+            <div class="toolbar" id="deviceToolbar">
+              <div class="form-field">
+                <label for="deviceSearch">Search devices</label>
+                <input type="search" id="deviceSearch" name="deviceSearch" placeholder="ID, name or type">
+              </div>
+              <div class="form-field">
+                <label for="deviceStatusFilter">Status</label>
+                <select id="deviceStatusFilter" name="deviceStatusFilter">
+                  <option value="all">All statuses</option>
+                  <option value="normal">Normal</option>
+                  <option value="suspicious">Suspicious</option>
+                  <option value="offline">Offline</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="deviceTypeFilter">Type</label>
+                <select id="deviceTypeFilter" name="deviceTypeFilter">
+                  <option value="all">All types</option>
+                  <option value="sensor">Sensor</option>
+                  <option value="camera">Camera</option>
+                  <option value="gateway">Gateway</option>
+                  <option value="controller">Controller</option>
+                </select>
+              </div>
+              <button type="button" class="btn btn-secondary" id="deviceFilterResetBtn">Reset Filters</button>
+            </div>
+
+            <div class="table-wrap" id="deviceTableWrap" tabindex="0" role="region" aria-label="Device table, scrollable">
+              <table class="data-table" id="deviceTable">
+                <caption class="visually-hidden">Monitored IoT devices (demo data)</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Device ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Temp (&deg;C)</th>
+                    <th scope="col">CPU (%)</th>
+                    <th scope="col">Network (KB/s)</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Risk</th>
+                    <th scope="col">Last Seen</th>
+                  </tr>
+                </thead>
+                <tbody id="deviceTableBody">
+                  <tr data-status="normal" data-type="sensor">
+                    <td>DEMO-001</td><td>Temperature Sensor A1</td><td>Sensor</td><td>36.5</td><td>34</td><td>120</td>
+                    <td><span class="badge badge-normal">Normal</span></td><td><span class="risk risk-low">Low</span></td><td>Sample: 2 min ago</td>
+                  </tr>
+                  <tr data-status="normal" data-type="gateway">
+                    <td>DEMO-002</td><td>Smart Gateway G2</td><td>Gateway</td><td>41.2</td><td>52</td><td>480</td>
+                    <td><span class="badge badge-normal">Normal</span></td><td><span class="risk risk-low">Low</span></td><td>Sample: 1 min ago</td>
+                  </tr>
+                  <tr data-status="suspicious" data-type="camera">
+                    <td>DEMO-003</td><td>IP Camera C3</td><td>Camera</td><td>58.9</td><td>91</td><td>2350</td>
+                    <td><span class="badge badge-suspicious">Suspicious</span></td><td><span class="risk risk-high">High</span></td><td>Sample: 30 sec ago</td>
+                  </tr>
+                  <tr data-status="offline" data-type="sensor">
+                    <td>DEMO-004</td><td>Humidity Sensor H4</td><td>Sensor</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td>
+                    <td><span class="badge badge-offline">Offline</span></td><td><span class="risk risk-medium">Medium</span></td><td>Sample: 3 hr ago</td>
+                  </tr>
+                  <tr data-status="normal" data-type="controller">
+                    <td>DEMO-005</td><td>Door Controller D5</td><td>Controller</td><td>33.8</td><td>28</td><td>95</td>
+                    <td><span class="badge badge-normal">Normal</span></td><td><span class="risk risk-low">Low</span></td><td>Sample: 4 min ago</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="empty-state" id="deviceEmptyState" hidden>No devices match the selected filters.</p>
+          </article>
+        </section>
+
+        <!-- ===== E. AI ANOMALY ANALYSIS ===== -->
+        <section class="section" id="analysis" aria-labelledby="analysisTitle">
+          <div class="section-header">
+            <h2 class="section-title" id="analysisTitle">AI Anomaly Analysis</h2>
+            <span class="badge badge-planned">Not connected yet</span>
+          </div>
+          <div class="analysis-grid">
+
+            <article class="card" id="analysisInputCard">
+              <h3 class="card-heading">Sensor Input</h3>
+              <p class="card-note">Sample default values. Backend analysis (FastAPI <code>/analyze</code>) is planned and not connected in this HTML.</p>
+              <form id="analysisForm" class="form-grid" novalidate>
+                <div class="form-field">
+                  <label for="inputDeviceId">Device ID</label>
+                  <input type="text" id="inputDeviceId" name="device_id" value="DEMO-001" required>
+                </div>
+                <div class="form-field">
+                  <label for="inputTemperature">Temperature (&deg;C)</label>
+                  <input type="number" id="inputTemperature" name="temperature" value="36.5" step="0.1" min="-40" max="150" required>
+                </div>
+                <div class="form-field">
+                  <label for="inputHumidity">Humidity (%)</label>
+                  <input type="number" id="inputHumidity" name="humidity" value="45" step="0.1" min="0" max="100" required>
+                </div>
+                <div class="form-field">
+                  <label for="inputCpuUsage">CPU Usage (%)</label>
+                  <input type="number" id="inputCpuUsage" name="cpu_usage" value="35" step="0.1" min="0" max="100" required>
+                </div>
+                <div class="form-field">
+                  <label for="inputMemoryUsage">Memory Usage (%)</label>
+                  <input type="number" id="inputMemoryUsage" name="memory_usage" value="48" step="0.1" min="0" max="100" required>
+                </div>
+                <div class="form-field">
+                  <label for="inputNetworkTraffic">Network Traffic (KB/s)</label>
+                  <input type="number" id="inputNetworkTraffic" name="network_traffic" value="120" step="0.1" min="0" required>
+                </div>
+                <div class="form-field">
+                  <label for="inputPacketRate">Packet Rate (packets/s)</label>
+                  <input type="number" id="inputPacketRate" name="packet_rate" value="850" step="1" min="0" required>
+                </div>
+                <div class="form-field">
+                  <label for="inputConnectionCount">Connection Count</label>
+                  <input type="number" id="inputConnectionCount" name="connection_count" value="24" step="1" min="0" required>
+                </div>
+                <div class="form-field">
+                  <label for="inputLatency">Latency (ms)</label>
+                  <input type="number" id="inputLatency" name="latency" value="28" step="0.1" min="0" required>
+                </div>
+                <div class="form-field">
+                  <label for="inputFailedLogins">Failed Login Attempts</label>
+                  <input type="number" id="inputFailedLogins" name="failed_logins" value="0" step="1" min="0" required>
+                </div>
+                <div class="form-field">
+                  <label for="inputDataRate">Data Transmission Rate (Mbps)</label>
+                  <input type="number" id="inputDataRate" name="data_rate" value="2.4" step="0.1" min="0" required>
+                </div>
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-primary" id="analyzeDeviceBtn">Analyze Device</button>
+                  <button type="reset" class="btn btn-secondary" id="clearInputsBtn">Clear Inputs</button>
+                </div>
+              </form>
+            </article>
+
+            <article class="card" id="analysisResultCard">
+              <h3 class="card-heading">Analysis Result</h3>
+              <div class="message message-loading" id="analysisLoading" role="status" aria-live="polite" hidden>Analyzing device data...</div>
+              <div class="message message-error" id="analysisError" role="alert" hidden>Analysis failed. Please check the backend connection and try again.</div>
+              <div class="result-panel" id="analysisResultPanel" aria-live="polite">
+                <dl class="result-list">
+                  <div class="result-item">
+                    <dt>Predicted Status</dt>
+                    <dd id="resultStatus"><span class="badge badge-planned">Awaiting analysis</span></dd>
+                  </div>
+                  <div class="result-item">
+                    <dt>Risk Level</dt>
+                    <dd id="resultRisk"><span class="risk risk-none">&mdash;</span></dd>
+                  </div>
+                  <div class="result-item">
+                    <dt>Anomaly Score</dt>
+                    <dd id="resultScore">&mdash;</dd>
+                  </div>
+                </dl>
+                <div class="result-explanation" id="resultExplanation">
+                  <h4>Explanation</h4>
+                  <p id="resultExplanationText">No analysis has been run yet. Results will appear here after the backend is connected.</p>
+                </div>
+              </div>
+            </article>
+
+          </div>
+        </section>
+
+        <!-- ===== F. LIVE ANALYTICS ===== -->
+        <section class="section" id="analytics" aria-labelledby="analyticsTitle">
+          <div class="section-header">
+            <h2 class="section-title" id="analyticsTitle">Live Analytics</h2>
+            <div class="form-field form-field-inline">
+              <label for="timeRangeSelect">Time range</label>
+              <select id="timeRangeSelect" name="timeRange">
+                <option value="1h">Last 1 hour</option>
+                <option value="6h">Last 6 hours</option>
+                <option value="24h" selected>Last 24 hours</option>
+                <option value="7d">Last 7 days</option>
+              </select>
+            </div>
+          </div>
+          <div class="chart-grid">
+
+            <article class="card chart-card" id="sensorTrendCard">
+              <h3 class="card-heading">Sensor Trend</h3>
+              <div class="chart-container" id="sensorTrendChartContainer">
+                <canvas id="sensorTrendChart" role="img" aria-label="Sensor trend line chart"></canvas>
+              </div>
+              <div class="chart-meta">
+                <ul class="chart-legend" id="sensorTrendLegend" aria-label="Sensor trend legend"><li>Temperature</li><li>Humidity</li><li>CPU</li></ul>
+                <p class="axis-label">X: Time &middot; Y: Sensor value</p>
+              </div>
+            </article>
+
+            <article class="card chart-card" id="networkTrafficCard">
+              <h3 class="card-heading">Network Traffic</h3>
+              <div class="chart-container" id="networkTrafficChartContainer">
+                <canvas id="networkTrafficChart" role="img" aria-label="Network traffic chart"></canvas>
+              </div>
+              <div class="chart-meta">
+                <ul class="chart-legend" id="networkTrafficLegend" aria-label="Network traffic legend"><li>Inbound</li><li>Outbound</li></ul>
+                <p class="axis-label">X: Time &middot; Y: KB/s</p>
+              </div>
+            </article>
+
+            <article class="card chart-card" id="statusDistributionCard">
+              <h3 class="card-heading">Device Status Distribution</h3>
+              <div class="chart-container" id="statusDistributionChartContainer">
+                <canvas id="statusDistributionChart" role="img" aria-label="Device status distribution chart"></canvas>
+              </div>
+              <div class="chart-meta">
+                <ul class="chart-legend" id="statusDistributionLegend" aria-label="Device status legend"><li>Normal</li><li>Suspicious</li><li>Offline</li></ul>
+                <p class="axis-label">Share of devices by status</p>
+              </div>
+            </article>
+
+            <article class="card chart-card" id="anomalyHistoryCard">
+              <h3 class="card-heading">Anomaly History</h3>
+              <div class="chart-container" id="anomalyHistoryChartContainer">
+                <canvas id="anomalyHistoryChart" role="img" aria-label="Anomaly history chart"></canvas>
+              </div>
+              <div class="chart-meta">
+                <ul class="chart-legend" id="anomalyHistoryLegend" aria-label="Anomaly history legend"><li>Anomalies</li><li>Threshold</li></ul>
+                <p class="axis-label">X: Time &middot; Y: Anomaly count</p>
+              </div>
+            </article>
+
+          </div>
+          <p class="card-note" id="chartsNote">Charts will be rendered here by JavaScript in a later stage.</p>
+        </section>
+
+        <!-- ===== G. ALERTS AND EVENTS ===== -->
+        <section class="section" id="alerts" aria-labelledby="alertsTitle">
+          <div class="section-header">
+            <h2 class="section-title" id="alertsTitle">Alerts &amp; Events</h2>
+            <span class="badge badge-demo">Demo events</span>
+          </div>
+
+          <div class="alerts-layout">
+
+            <article class="card" id="alertCenterCard">
+              <h3 class="card-heading">Recent Security Events</h3>
+              <div class="toolbar" id="alertToolbar">
+                <div class="form-field">
+                  <label for="alertSeverityFilter">Severity</label>
+                  <select id="alertSeverityFilter" name="alertSeverityFilter">
+                    <option value="all">All severities</option>
+                    <option value="critical">Critical</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label for="alertStatusFilter">Status</label>
+                  <select id="alertStatusFilter" name="alertStatusFilter">
+                    <option value="all">All</option>
+                    <option value="new">New</option>
+                    <option value="acknowledged">Acknowledged</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="table-wrap" id="alertTableWrap" tabindex="0" role="region" aria-label="Alerts table, scrollable">
+                <table class="data-table" id="alertTable">
+                  <caption class="visually-hidden">Recent security events (demo data)</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Severity</th>
+                      <th scope="col">Device ID</th>
+                      <th scope="col">Event</th>
+                      <th scope="col">Timestamp</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="alertTableBody">
+                    <tr data-severity="critical" data-status="new">
+                      <td><span class="severity severity-critical">Critical</span></td><td>DEMO-003</td><td>Abnormal outbound traffic spike (sample)</td><td>Sample: 10:42:15</td><td>New</td>
+                      <td><button type="button" class="btn btn-small" id="ackAlertBtn1" data-alert-id="1">Acknowledge</button></td>
+                    </tr>
+                    <tr data-severity="high" data-status="new">
+                      <td><span class="severity severity-high">High</span></td><td>DEMO-003</td><td>Repeated failed login attempts (sample)</td><td>Sample: 10:38:02</td><td>New</td>
+                      <td><button type="button" class="btn btn-small" id="ackAlertBtn2" data-alert-id="2">Acknowledge</button></td>
+                    </tr>
+                    <tr data-severity="medium" data-status="new">
+                      <td><span class="severity severity-medium">Medium</span></td><td>DEMO-004</td><td>Device went offline unexpectedly (sample)</td><td>Sample: 07:15:40</td><td>New</td>
+                      <td><button type="button" class="btn btn-small" id="ackAlertBtn3" data-alert-id="3">Acknowledge</button></td>
+                    </tr>
+                    <tr data-severity="low" data-status="acknowledged">
+                      <td><span class="severity severity-low">Low</span></td><td>DEMO-002</td><td>Minor latency increase (sample)</td><td>Sample: 06:50:11</td><td>Acknowledged</td>
+                      <td><button type="button" class="btn btn-small" id="ackAlertBtn4" data-alert-id="4" disabled>Acknowledged</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="empty-state" id="alertEmptyState" hidden>No alerts to display. All systems are operating normally.</p>
+            </article>
+
+            <!-- ===== H. ALARM CONTROL PANEL ===== -->
+            <article class="card alarm-card" id="alarmControlPanel" aria-labelledby="alarmTitle">
+              <h3 class="card-heading" id="alarmTitle">Alarm Control Panel</h3>
+              <div class="alarm-state" id="alarmStateIndicator" role="status" aria-live="polite">
+                <span class="status-dot" aria-hidden="true"></span>
+                <span id="alarmStateText">Alarm state: Disabled</span>
+              </div>
+
+              <div class="toggle-row">
+                <label for="enableAlarmToggle">Enable Alarm</label>
+                <input type="checkbox" id="enableAlarmToggle" name="enableAlarm" role="switch">
+              </div>
+
+              <div class="alarm-actions">
+                <button type="button" class="btn btn-secondary" id="muteAlarmBtn" aria-pressed="false">Mute</button>
+                <button type="button" class="btn btn-secondary" id="testAlarmBtn">Test Alarm</button>
+                <button type="button" class="btn btn-primary" id="acknowledgeAlarmBtn">Acknowledge Alert</button>
+              </div>
+
+              <p class="card-note" id="alarmNote">Sound alerts require browser permission and a user interaction (such as a click). Alarm behaviour is not implemented in this HTML.</p>
+            </article>
+
+          </div>
+        </section>
+
+        <!-- ===== I. SYSTEM ARCHITECTURE ===== -->
+        <section class="section" id="architecture" aria-labelledby="architectureTitle">
+          <div class="section-header">
+            <h2 class="section-title" id="architectureTitle">System Architecture</h2>
+            <span class="badge badge-planned">Planned design</span>
+          </div>
+          <p class="card-note">Planned project architecture. This diagram does not represent a completed hardware deployment.</p>
+          <ol class="flow" id="architectureFlow">
+            <li class="flow-step card" id="stageSensors">
+              <span class="flow-number" aria-hidden="true">1</span>
+              <h3>IoT Sensors / Devices</h3>
+              <p>Sensors and connected devices produce readings such as temperature, CPU and network activity.</p>
+            </li>
+            <li class="flow-arrow" aria-hidden="true">&rarr;</li>
+            <li class="flow-step card" id="stageCollection">
+              <span class="flow-number" aria-hidden="true">2</span>
+              <h3>Data Collection</h3>
+              <p>Readings are gathered and prepared as input features for analysis.</p>
+            </li>
+            <li class="flow-arrow" aria-hidden="true">&rarr;</li>
+            <li class="flow-step card" id="stageBackend">
+              <span class="flow-number" aria-hidden="true">3</span>
+              <h3>FastAPI Backend</h3>
+              <p>A Python API receives device data and exposes an analysis endpoint.</p>
+            </li>
+            <li class="flow-arrow" aria-hidden="true">&rarr;</li>
+            <li class="flow-step card" id="stageModel">
+              <span class="flow-number" aria-hidden="true">4</span>
+              <h3>ML Anomaly Detection</h3>
+              <p>A trained machine learning model scores each reading as normal or anomalous.</p>
+            </li>
+            <li class="flow-arrow" aria-hidden="true">&rarr;</li>
+            <li class="flow-step card" id="stageRisk">
+              <span class="flow-number" aria-hidden="true">5</span>
+              <h3>Risk Classification</h3>
+              <p>The anomaly score is mapped to a Low, Medium or High risk level.</p>
+            </li>
+            <li class="flow-arrow" aria-hidden="true">&rarr;</li>
+            <li class="flow-step card" id="stageDashboard">
+              <span class="flow-number" aria-hidden="true">6</span>
+              <h3>Dashboard &amp; Alarm</h3>
+              <p>Results are shown on this dashboard and can trigger alerts for operators.</p>
+            </li>
+          </ol>
+        </section>
+
+        <!-- ===== SETTINGS ===== -->
+        <section class="section" id="settings" aria-labelledby="settingsTitle">
+          <div class="section-header">
+            <h2 class="section-title" id="settingsTitle">Settings</h2>
+          </div>
+          <article class="card">
+            <form id="settingsForm" class="form-grid" novalidate>
+              <div class="form-field">
+                <label for="settingsBackendUrl">Backend URL (planned)</label>
+                <input type="text" id="settingsBackendUrl" name="backendUrl" value="http://127.0.0.1:8000" readonly>
+              </div>
+              <div class="form-field">
+                <label for="settingsAnalyzeEndpoint">Analysis endpoint (planned)</label>
+                <input type="text" id="settingsAnalyzeEndpoint" name="analyzeEndpoint" value="/analyze" readonly>
+              </div>
+              <div class="form-field">
+                <label for="settingsRefreshInterval">Refresh interval</label>
+                <select id="settingsRefreshInterval" name="refreshInterval">
+                  <option value="5">Every 5 seconds</option>
+                  <option value="10" selected>Every 10 seconds</option>
+                  <option value="30">Every 30 seconds</option>
+                  <option value="60">Every 60 seconds</option>
+                </select>
+              </div>
+              <div class="toggle-row">
+                <label for="settingsDemoModeToggle">Demo mode</label>
+                <input type="checkbox" id="settingsDemoModeToggle" name="demoMode" role="switch">
+              </div>
+            </form>
+          </article>
+        </section>
+
+      </main>
+
+      <!-- ===== J. FOOTER / SYSTEM STATUS ===== -->
+      <footer class="footer" id="footer">
+        <div class="footer-status" aria-label="System status">
+          <strong class="footer-brand">IoT Sentinel AI</strong>
+          <span class="badge badge-demo" id="footerModeBadge">Demo Mode</span>
+          <span class="badge badge-status" id="footerBackendStatus">Backend: Not Connected</span>
+          <span class="badge badge-status" id="footerModelStatus">Model: Not Connected</span>
+        </div>
+        <p class="footer-note">&copy; <span id="currentYear">2026</span> IoT Sentinel AI. Academic project &ndash; AI-Based IoT Cyberattack and Device Anomaly Detection. For demonstration purposes only.</p>
+      </footer>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
